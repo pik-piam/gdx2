@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.buildlibrary$
+^.*\.zenodo.json$
+^\.github$
+^codecov\.yml$
+^\.pre-commit-config\.yaml$
+^workflow$
+^.lintr$
+^tests/.lintr$
+^Makefile$
+^.*CITATION.cff$
+^\.git$

@@ -1,28 +1,21 @@
 cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
-title: 'gdx: Interface package for GDX files in R'
-version: 1.53.1
-date-released: '2024-05-17'
-abstract: A wrapper package for the gdxrrw extending its functionality and allowing
-  to read and write GDX files directly in R.
+title: 'gdx2: Interface package for GDX files in R'
+version: 0.1.0
+date-released: '2024-07-19'
+abstract: A wrapper package for the gamstransfer package extending its functionality
+  and allowing to read GDX files directly in R. It is emulating the basic features
+  of the readGDX function in the gdx package but now based on gamstransfer instead
+  of gdxrrw which served as a basis for gdx.
 authors:
 - family-names: Dietrich
   given-names: Jan Philipp
   email: dietrich@pik-potsdam.de
-  orcid: 0000-0002-4309-6431
-  affiliation: Potsdam Institute for Climate Impact Research
-- family-names: Giannousakis
-  given-names: Anastasis
-  email: giannou@pik-potsdam.de
-- family-names: Bonsch
-  given-names: Markus Bonsch
-- family-names: Baumstark
-  given-names: Lavinia Baumstark
-  email: baumstark@pik-potsdam.de
+  orcid: https://orcid.org/0000-0002-4309-6431
   affiliation: Potsdam Institute for Climate Impact Research
 license: BSD-2-Clause
-keywords: tool
-repository-code: https://github.com/pik-piam/gdx
-doi: 10.5281/zenodo.1158598
+keywords:
+- tool
+repository-code: https://github.com/pik-piam/gdx2
 

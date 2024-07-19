@@ -1,8 +1,8 @@
 Type: Package
 Package: gdx2
 Title: Interface package for GDX files in R
-Version: 0.0.1
-Date: 2024-05-17
+Version: 0.1.0
+Date: 2024-07-19
 Authors@R: c(
     person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", 
     comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0002-4309-6431"), role = c("aut","cre")))
@@ -14,7 +14,7 @@ URL:https://github.com/pik-piam/gdx2
 BugReports: https://github.com/pik-piam/gdx2/issues
 Depends:
     gamstransfer,
-    magclass (>= 6.17.0 )
+    magclass (>= 6.0)
 Suggests: 
     covr
 Encoding: UTF-8
