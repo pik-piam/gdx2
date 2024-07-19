@@ -48,13 +48,12 @@
 #' @return The gdx objects read in the format set with the argument
 #' \code{format}.
 #' @author Jan Philipp Dietrich
-#' @export
-#' @importFrom magclass as.magpie
 #' @examples
 #' \dontrun{
 #' readGDX2("bla.gdx", "blub*")
 #' }
-#'
+#' @export
+
 readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
                     spatial = NULL, temporal = NULL, magpie_cells = TRUE) {
 
@@ -102,7 +101,7 @@ readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
       if(m$class %in% c("Set", "Alias")) {
         x[[i]] <- x[[i]]$records
       } else {
-        x[[i]] <- as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal)
+        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal)
       }
       attr(x[[i]], "description") <- d
       attr(x[[i]], "gdxMetadata") <- m

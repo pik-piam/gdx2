@@ -12,7 +12,7 @@ Description: A wrapper package for the gamstransfer package extending its functi
 License: BSD_2_clause + file LICENSE
 URL:https://github.com/pik-piam/gdx2
 BugReports: https://github.com/pik-piam/gdx2/issues
-Depends:
+Imports:
     gamstransfer,
     magclass (>= 6.0)
 Suggests: 

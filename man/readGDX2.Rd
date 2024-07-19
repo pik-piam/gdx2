@@ -76,7 +76,6 @@ readGDX which is now based on magclass structures and uses
 \dontrun{
 readGDX2("bla.gdx", "blub*")
 }
-
 }
 \author{
 Jan Philipp Dietrich
