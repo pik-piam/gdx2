@@ -41,7 +41,7 @@
 #' @param temporal argument to determine the temporal columns in the dataframe to
 #' be converted to a magclass object. Defaults to NULL.
 #' See \code{\link[magclass]{as.magpie}} for more information.
-#' @param magpie_cells (boolean) determines whether a set "j" gets special treatment
+#' @param magpieCells (boolean) determines whether a set "j" gets special treatment
 #' by replacing underscores in the set elements with dots. Active by default for
 #' historical reasons. Can be ignored in most cases. Makes only a difference, if
 #' 1) GDX element depends on set "j", 2) set "j" contains underscores.
@@ -55,7 +55,7 @@
 #' @export
 
 readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
-                    spatial = NULL, temporal = NULL, magpie_cells = TRUE) {
+                    spatial = NULL, temporal = NULL, magpieCells = TRUE) {
 
   formats <- c(f = "first_found", first_found = "first_found",
                s = "simple", simple = "simple",
@@ -98,14 +98,23 @@ readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
     d <- x[[i]]$description
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
     if(format != "raw") {
+      # special treatment of set "j" -> replace underscores with dots!
+      if (magpieCells && !is.null(x[[i]]$records$j)) {
+        levels(x[[i]]$records$j) <- sub("_", ".", levels(x[[i]]$records$j))
+        names(x[[i]]$records)[names(x[[i]]$records) == "j"] <- "i.j"
+      }
       if(m$class %in% c("Set", "Alias")) {
         x[[i]] <- x[[i]]$records
       } else {
-        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal)
+        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal, replacement = ".")
       }
       attr(x[[i]], "description") <- d
       attr(x[[i]], "gdxMetadata") <- m
     }
+  }
+
+  if(length(x) == 1 && format == "simplest") {
+    x <- x[[1]]
   }
 
   return(x)

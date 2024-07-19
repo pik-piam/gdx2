@@ -11,7 +11,7 @@ readGDX2(
   react = "warning",
   spatial = NULL,
   temporal = NULL,
-  magpie_cells = TRUE
+  magpieCells = TRUE
 )
 }
 \arguments{
@@ -58,7 +58,7 @@ See \code{\link[magclass]{as.magpie}} for more information.}
 be converted to a magclass object. Defaults to NULL.
 See \code{\link[magclass]{as.magpie}} for more information.}
 
-\item{magpie_cells}{(boolean) determines whether a set "j" gets special treatment
+\item{magpieCells}{(boolean) determines whether a set "j" gets special treatment
 by replacing underscores in the set elements with dots. Active by default for
 historical reasons. Can be ignored in most cases. Makes only a difference, if
 1) GDX element depends on set "j", 2) set "j" contains underscores.}
