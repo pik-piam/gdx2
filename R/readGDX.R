@@ -1,4 +1,4 @@
-#' readGDX2
+#' readGDX
 #'
 #' Function to read gdx files in R. It is a stripped-down reimplementation of
 #' readGDX which is now based on magclass structures and uses
@@ -50,11 +50,11 @@
 #' @author Jan Philipp Dietrich
 #' @examples
 #' \dontrun{
-#' readGDX2("bla.gdx", "blub*")
+#' readGDX("bla.gdx", "blub*")
 #' }
 #' @export
 
-readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
+readGDX <- function(gdx, ..., format = "simplest", react = "warning",
                     spatial = NULL, temporal = NULL, magpieCells = TRUE) {
 
   formats <- c(f = "first_found", first_found = "first_found",
@@ -103,9 +103,10 @@ readGDX2 <- function(gdx, ..., format = "simplest", react = "warning",
         levels(x[[i]]$records$j) <- sub("_", ".", levels(x[[i]]$records$j))
         names(x[[i]]$records)[names(x[[i]]$records) == "j"] <- "i.j"
       }
-      if(m$class %in% c("Set", "Alias")) {
+      if(m$class == "Set") {
         x[[i]] <- x[[i]]$records
-      } else {
+        if(dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+      } else if(m$class != "Alias") {
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal, replacement = ".")
       }
       attr(x[[i]], "description") <- d
