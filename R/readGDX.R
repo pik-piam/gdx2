@@ -114,7 +114,7 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
     }
   }
 
-  if(length(x) == 1 && format == "simplest") {
+  if(length(x) == 1 && format %in% c("simplest", "first_found")) {
     x <- x[[1]]
   }
 
