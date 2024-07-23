@@ -98,16 +98,16 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
     d <- x[[i]]$description
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
     if(format != "raw") {
-      # special treatment of set "j" -> replace underscores with dots!
-      if (magpieCells && !is.null(x[[i]]$records$j)) {
-        levels(x[[i]]$records$j) <- sub("_", ".", levels(x[[i]]$records$j))
-        names(x[[i]]$records)[names(x[[i]]$records) == "j"] <- "i.j"
-      }
       if(m$class == "Set") {
         x[[i]] <- x[[i]]$records
         if(dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
       } else if(m$class != "Alias") {
-        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial, temporal = temporal, replacement = ".")
+        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
+                                      temporal = temporal)
+        # special treatment of set "j" -> replace underscores with dots!
+        if (magpieCells && ("j" %in% magclass::getSets(x[[i]]))) {
+          magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_",".", magclass::getItems(x[[i]],1))
+        }
       }
       attr(x[[i]], "description") <- d
       attr(x[[i]], "gdxMetadata") <- m
