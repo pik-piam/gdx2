@@ -11,7 +11,9 @@ readGDX(
   react = "warning",
   spatial = NULL,
   temporal = NULL,
-  magpieCells = TRUE
+  magpieCells = TRUE,
+  restoreZeros = TRUE,
+  addAttributes = TRUE
 )
 }
 \arguments{
@@ -62,6 +64,15 @@ See \code{\link[magclass]{as.magpie}} for more information.}
 by replacing underscores in the set elements with dots. Active by default for
 historical reasons. Can be ignored in most cases. Makes only a difference, if
 1) GDX element depends on set "j", 2) set "j" contains underscores.}
+
+\item{restoreZeros}{Defines whether 0s, which are typically not stored in a
+gdx file, should be restored or ignored in the output. By default they will
+be restored. If possible, it is recommended to use restore_zeros=TRUE. It is
+faster but more memory consuming. If you get memory errors you should use
+restore_zeros=FALSE}
+
+\item{addAttributes}{Boolean which controls whether the description and
+gdxMetadata should be added as attributes or not}
 }
 \value{
 The gdx objects read in the format set with the argument

@@ -45,6 +45,13 @@
 #' by replacing underscores in the set elements with dots. Active by default for
 #' historical reasons. Can be ignored in most cases. Makes only a difference, if
 #' 1) GDX element depends on set "j", 2) set "j" contains underscores.
+#' @param restoreZeros Defines whether 0s, which are typically not stored in a
+#' gdx file, should be restored or ignored in the output. By default they will
+#' be restored. If possible, it is recommended to use restore_zeros=TRUE. It is
+#' faster but more memory consuming. If you get memory errors you should use
+#' restore_zeros=FALSE
+#' @param addAttributes Boolean which controls whether the description and
+#' gdxMetadata should be added as attributes or not
 #' @return The gdx objects read in the format set with the argument
 #' \code{format}.
 #' @author Jan Philipp Dietrich
@@ -55,7 +62,8 @@
 #' @export
 
 readGDX <- function(gdx, ..., format = "simplest", react = "warning",
-                    spatial = NULL, temporal = NULL, magpieCells = TRUE) {
+                    spatial = NULL, temporal = NULL, magpieCells = TRUE,
+                    restoreZeros = TRUE, addAttributes = TRUE) {
 
   formats <- c(f = "first_found", first_found = "first_found",
                s = "simple", simple = "simple",
@@ -73,16 +81,12 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
   # translate name patterns in standard regular expression syntax
   allPatterns <- paste("^", gsub("*", ".*", allPatterns, fixed = TRUE), "$", sep = "")
 
-  if(format != "first_found") {
-    # collapse pattern to single search pattern
-    allPatterns <- paste(allPatterns, collapse="|")
-  }
-
   items <- names(gamstransfer::readGDX(gdx, records=FALSE))
 
+  selectedItems <- NULL
   for(p in allPatterns) {
-    selectedItems <- grep(p, items, value = TRUE)
-    if(length(selectedItems) > 0) break
+    selectedItems <- c(selectedItems, grep(p, items, value = TRUE))
+    if(format == "first_found" && length(selectedItems) > 0) break
   }
 
   if (length(selectedItems) == 0) {
@@ -91,9 +95,16 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
     return(NULL)
   }
 
+  if(anyDuplicated(selectedItems)) {
+    warning("Item(s) selected more than once, but will only be read once!")
+    selectedItems <- unique(selectedItems)
+  }
+
+
   if (format == "name") return(selectedItems)
 
   x <- gamstransfer::readGDX(gdx, selectedItems)
+  x <- x[selectedItems]
   for(i in seq_along(x)) {
     d <- x[[i]]$description
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
@@ -102,6 +113,12 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
         x[[i]] <- x[[i]]$records
         if(dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
       } else if(m$class != "Alias") {
+        if(restoreZeros) {
+          dimnames <- readGDX(gdx,x[[i]]$domain, addAttributes = FALSE)
+          out <- array(0, sapply(dimnames, length), dimnames)
+          out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
+          x[[i]]$records <- out
+        }
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
                                       temporal = temporal)
         # special treatment of set "j" -> replace underscores with dots!
@@ -109,8 +126,10 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_",".", magclass::getItems(x[[i]],1))
         }
       }
-      attr(x[[i]], "description") <- d
-      attr(x[[i]], "gdxMetadata") <- m
+      if(addAttributes) {
+        attr(x[[i]], "description") <- d
+        attr(x[[i]], "gdxMetadata") <- m
+      }
     }
   }
 
