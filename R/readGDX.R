@@ -121,8 +121,23 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
         x[[i]] <- x[[i]]$records
         if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
       } else if (m$class != "Alias") {
+        if (m$class == "Variable") {
+          # convert data.table into long format
+          .long <- function(x) {
+            n <- c("level", "marginal", "lower", "upper", "scale")
+            cn <- colnames(x)[!(colnames(x) %in% n)]
+            out <- rbind(x[cn], x[cn], x[cn], x[cn], x[cn])
+            out$"_field" <- rep(n, each = nrow(x))
+            out$value <- unlist(x[n])
+            return(out)
+          }
+          x[[i]]$records <- .long(x[[i]]$records)
+        }
         if (restoreZeros && length(x[[i]]$domain) > 0) {
           dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE)
+          if ("_field" %in% colnames(x[[i]]$records)) {
+            dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
+          }
           out <- array(0, vapply(dimnames, length, 1), dimnames)
           if (!is.null(x[[i]]$records)) {
             out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
@@ -130,7 +145,7 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
           x[[i]]$records <- out
         }
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
-                                      temporal = temporal)
+                                      temporal = temporal, tidy = TRUE)
         # special treatment of set "j" -> replace underscores with dots!
         if (magpieCells && ("j" %in% magclass::getSets(x[[i]]))) {
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
