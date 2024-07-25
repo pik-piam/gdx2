@@ -12,6 +12,7 @@ readGDX(
   spatial = NULL,
   temporal = NULL,
   magpieCells = TRUE,
+  select = NULL,
   restoreZeros = TRUE,
   addAttributes = TRUE
 )
@@ -64,6 +65,11 @@ See \code{\link[magclass]{as.magpie}} for more information.}
 by replacing underscores in the set elements with dots. Active by default for
 historical reasons. Can be ignored in most cases. Makes only a difference, if
 1) GDX element depends on set "j", 2) set "j" contains underscores.}
+
+\item{select}{preselection of subsets in the data coming from the gdx using
+the function \code{\link[magclass]{mselect}}. Information has to be provided
+as a list of selections (e.g. \code{select=list(type="level")}). See
+\code{\link[magclass]{mselect}} for more information.}
 
 \item{restoreZeros}{Defines whether 0s, which are typically not stored in a
 gdx file, should be restored or ignored in the output. By default they will

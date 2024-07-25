@@ -45,6 +45,10 @@
 #' by replacing underscores in the set elements with dots. Active by default for
 #' historical reasons. Can be ignored in most cases. Makes only a difference, if
 #' 1) GDX element depends on set "j", 2) set "j" contains underscores.
+#' @param select preselection of subsets in the data coming from the gdx using
+#' the function \code{\link[magclass]{mselect}}. Information has to be provided
+#' as a list of selections (e.g. \code{select=list(type="level")}). See
+#' \code{\link[magclass]{mselect}} for more information.
 #' @param restoreZeros Defines whether 0s, which are typically not stored in a
 #' gdx file, should be restored or ignored in the output. By default they will
 #' be restored. If possible, it is recommended to use restore_zeros=TRUE. It is
@@ -61,32 +65,36 @@
 #' }
 #' @export
 
-readGDX <- function(gdx, ..., format = "simplest", react = "warning",
+readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: cyclocomp_linter
                     spatial = NULL, temporal = NULL, magpieCells = TRUE,
-                    restoreZeros = TRUE, addAttributes = TRUE) {
+                    select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
 
   formats <- c(f = "first_found", first_found = "first_found",
                s = "simple", simple = "simple",
                st = "simplest", simplest = "simplest",
                r = "raw", raw = "raw",
                n = "name", name = "name")
-  if(is.na(formats[format])) stop("unknown format \"", format, "\"")
+  if (!is.character(format)) stop("format setting is not a character!")
+  if (is.na(formats[format])) stop("unknown format \"", format, "\"")
   format <- formats[format]
 
   allPatterns <- c(...)
   if (length(allPatterns) == 0) {
-    if (format == "first_found") stop("For format \"first_found\" you have to explicitly give all possible names of the object you would like to read in!")
+    if (format == "first_found") {
+      stop("For format \"first_found\" you have to explicitly give all possible ",
+           "names of the object you would like to read in!")
+    }
     allPatterns <- "*"
   }
   # translate name patterns in standard regular expression syntax
   allPatterns <- paste("^", gsub("*", ".*", allPatterns, fixed = TRUE), "$", sep = "")
 
-  items <- names(gamstransfer::readGDX(gdx, records=FALSE))
+  items <- names(gamstransfer::readGDX(gdx, records = FALSE))
 
   selectedItems <- NULL
-  for(p in allPatterns) {
+  for (p in allPatterns) {
     selectedItems <- c(selectedItems, grep(p, items, value = TRUE))
-    if(format == "first_found" && length(selectedItems) > 0) break
+    if (format == "first_found" && length(selectedItems) > 0) break
   }
 
   if (length(selectedItems) == 0) {
@@ -95,7 +103,7 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
     return(NULL)
   }
 
-  if(anyDuplicated(selectedItems)) {
+  if (anyDuplicated(selectedItems)) {
     warning("Item(s) selected more than once, but will only be read once!")
     selectedItems <- unique(selectedItems)
   }
@@ -105,35 +113,40 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning",
 
   x <- gamstransfer::readGDX(gdx, selectedItems)
   x <- x[selectedItems]
-  for(i in seq_along(x)) {
+  for (i in seq_along(x)) {
     d <- x[[i]]$description
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
-    if(format != "raw") {
-      if(m$class == "Set") {
+    if (format != "raw") {
+      if (m$class == "Set") {
         x[[i]] <- x[[i]]$records
-        if(dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
-      } else if(m$class != "Alias") {
-        if(restoreZeros) {
-          dimnames <- readGDX(gdx,x[[i]]$domain, addAttributes = FALSE)
-          out <- array(0, sapply(dimnames, length), dimnames)
-          out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
+        if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+      } else if (m$class != "Alias") {
+        if (restoreZeros && length(x[[i]]$domain) > 0) {
+          dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE)
+          out <- array(0, vapply(dimnames, length, 1), dimnames)
+          if (!is.null(x[[i]]$records)) {
+            out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
+          }
           x[[i]]$records <- out
         }
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
                                       temporal = temporal)
         # special treatment of set "j" -> replace underscores with dots!
         if (magpieCells && ("j" %in% magclass::getSets(x[[i]]))) {
-          magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_",".", magclass::getItems(x[[i]],1))
+          magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
+        }
+        if (!is.null(select)) {
+          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = TRUE)
         }
       }
-      if(addAttributes) {
+      if (addAttributes) {
         attr(x[[i]], "description") <- d
         attr(x[[i]], "gdxMetadata") <- m
       }
     }
   }
 
-  if(length(x) == 1 && format %in% c("simplest", "first_found")) {
+  if (length(x) == 1 && format %in% c("simplest", "first_found")) {
     x <- x[[1]]
   }
 
