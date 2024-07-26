@@ -17,18 +17,19 @@
 #' \dontrun{
 #' calcScaling("fulldata.gdx")
 #' }
+#' @export
 calcScaling <- function(gdx, file = NULL, magnitude = 2) {
-  v <- readGDX(gdx, types = "variables", field = "l")
+  v <- readGDX(gdx, type = "Variable", select = list("_field" = "level"))
   out <- NULL
   for (x in names(v)) {
     # calculate order of magnitude (oof)
     oof <- round(log10(mean(abs(v[[x]]))))
     if (is.nan(oof)) oof <- 0
     cat("\n oof =", oof, "  ", x)
-    if (length(attr(v[[x]], "gdxdata")$domains) == 0) {
+    if (length(attr(v[[x]], "gdxMetadata")$domain) == 0) {
       sets <- ""
     } else {
-      sets <- paste("(", paste(attr(v[[x]], "gdxdata")$domains, collapse = ","), ")", sep = "")
+      sets <- paste("(", paste(attr(v[[x]], "gdxMetadata")$domain, collapse = ","), ")", sep = "")
     }
     if (oof != -Inf && (oof < -1 * magnitude || oof > 1 * magnitude)) {
       out <- c(out, paste(x, ".scale", sets, " = 10e", oof, ";", sep = ""))

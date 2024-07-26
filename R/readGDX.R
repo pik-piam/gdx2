@@ -31,6 +31,9 @@
 #' \item{name (n)}{In this case the function returns the name of all objects
 #' found in the gdx which fit to the given search pattern and the given type
 #' as vector.}}
+#' @param type Type of objects that should be extracted. Available options
+#' are "Parameter", "Set", "Alias", "Variable" and "Equation". If NULL all
+#' types will be considered.
 #' @param react determines the reaction, when the object you would like to read
 #' in does not exist. Available options are "warning" (NULL is returned and a
 #' warning is send that the object is missing), "silent" (NULL is returned, but
@@ -67,13 +70,13 @@
 #' }
 #' @export
 
-readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: cyclocomp_linter
+readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning", # nolint: cyclocomp_linter
                     followAlias = FALSE, spatial = NULL, temporal = NULL, magpieCells = TRUE,
                     select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
 
   format <- .formatFormat(format)
 
-  selectedItems <- .expandPattern(c(...), gdx, format, react)
+  selectedItems <- .expandPattern(c(...), gdx, format, type, react)
 
   if (!is.null(selectedItems) && selectedItems == "###NOMATCH###") return(NULL)
 
@@ -182,7 +185,8 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
   return(formats[format])
 }
 
-.expandPattern <- function(allPatterns, gdx, format, react) {
+.expandPattern <- function(allPatterns, gdx, format, type, react) {
+  if (!is.null(format) && length(allPatterns) == 0) allPatterns <- "*"
   if (length(allPatterns) == 0) {
     if (format == "first_found") {
       stop("For format \"first_found\" you have to explicitly give all possible ",
@@ -190,12 +194,18 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
     }
     return(NULL)
   }
-  if (!all(grepl("*", allPatterns, fixed = TRUE))) return(allPatterns)
+  if (!all(grepl("*", allPatterns, fixed = TRUE)) && is.null(type)) return(allPatterns)
 
   # translate name patterns in standard regular expression syntax
   patterns <- paste("^", gsub("*", ".*", allPatterns, fixed = TRUE), "$", sep = "")
 
-  items <- names(gamstransfer::readGDX(gdx, records = FALSE))
+  elems <- gamstransfer::readGDX(gdx, records = FALSE)
+  items <- names(elems)
+
+  if (!is.null(type)) {
+    t <- vapply(elems, function(x) return(x$class), "")
+    items <- items[t %in% type]
+  }
 
   selectedItems <- NULL
   for (p in patterns) {

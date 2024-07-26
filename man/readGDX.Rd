@@ -8,6 +8,7 @@ readGDX(
   gdx,
   ...,
   format = "simplest",
+  type = NULL,
   react = "warning",
   followAlias = FALSE,
   spatial = NULL,
@@ -48,6 +49,10 @@ gdx file with different naming.}
 \item{name (n)}{In this case the function returns the name of all objects
 found in the gdx which fit to the given search pattern and the given type
 as vector.}}}
+
+\item{type}{Type of objects that should be extracted. Available options
+are "Parameter", "Set", "Alias", "Variable" and "Equation". If NULL all
+types will be considered.}
 
 \item{react}{determines the reaction, when the object you would like to read
 in does not exist. Available options are "warning" (NULL is returned and a
