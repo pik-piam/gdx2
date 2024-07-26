@@ -71,50 +71,37 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
                     followAlias = FALSE, spatial = NULL, temporal = NULL, magpieCells = TRUE,
                     select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
 
-  formats <- c(f = "first_found", first_found = "first_found",
-               s = "simple", simple = "simple",
-               st = "simplest", simplest = "simplest",
-               r = "raw", raw = "raw",
-               n = "name", name = "name")
-  if (!is.character(format)) stop("format setting is not a character!")
-  if (is.na(formats[format])) stop("unknown format \"", format, "\"")
-  format <- formats[format]
+  format <- .formatFormat(format)
 
-  allPatterns <- c(...)
-  if (length(allPatterns) == 0) {
-    if (format == "first_found") {
-      stop("For format \"first_found\" you have to explicitly give all possible ",
-           "names of the object you would like to read in!")
-    }
-    allPatterns <- "*"
-  }
-  # translate name patterns in standard regular expression syntax
-  allPatterns <- paste("^", gsub("*", ".*", allPatterns, fixed = TRUE), "$", sep = "")
+  selectedItems <- .expandPattern(c(...), gdx, format, react)
 
-  items <- names(gamstransfer::readGDX(gdx, records = FALSE))
-
-  selectedItems <- NULL
-  for (p in allPatterns) {
-    selectedItems <- c(selectedItems, grep(p, items, value = TRUE))
-    if (format == "first_found" && length(selectedItems) > 0) break
-  }
-
-  if (length(selectedItems) == 0) {
-    if (react == "warning") warning("No element of ", paste(c(...), collapse = ", "), " found in GDX! NULL returned")
-    if (react == "error") stop("No element of ", paste(c(...), collapse = ", "), " found in GDX!")
-    return(NULL)
-  }
+  if (!is.null(selectedItems) && selectedItems == "###NOMATCH###") return(NULL)
 
   if (anyDuplicated(selectedItems)) {
     warning("Item(s) selected more than once, but will only be read once!")
     selectedItems <- unique(selectedItems)
   }
 
-
   if (format == "name") return(selectedItems)
 
-  x <- gamstransfer::readGDX(gdx, selectedItems)
-  x <- x[selectedItems]
+  if (is.null(selectedItems)) {
+    x <- gamstransfer::readGDX(gdx)
+  } else {
+    x <- NULL
+    for (s in selectedItems) {
+      tmp <- try(gamstransfer::readGDX(gdx, s), silent = TRUE)
+      if (inherits(tmp, "try-error")) {
+        if (react == "warning" && format != "first_found") warning(tmp)
+        if (react == "error" && format != "first_found") stop(tmp)
+      } else if (format == "first_found") {
+        x <- tmp
+        break
+      } else {
+        x <- c(x, tmp)
+      }
+    }
+  }
+
   for (i in seq_along(x)) {
     d <- x[[i]]$description
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
@@ -182,4 +169,46 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
   }
 
   return(x)
+}
+
+.formatFormat <- function(format) {
+  formats <- c(f = "first_found", first_found = "first_found",
+               s = "simple", simple = "simple",
+               st = "simplest", simplest = "simplest",
+               r = "raw", raw = "raw",
+               n = "name", name = "name")
+  if (!is.character(format)) stop("format setting is not a character!")
+  if (is.na(formats[format])) stop("unknown format \"", format, "\"")
+  return(formats[format])
+}
+
+.expandPattern <- function(allPatterns, gdx, format, react) {
+  if (length(allPatterns) == 0) {
+    if (format == "first_found") {
+      stop("For format \"first_found\" you have to explicitly give all possible ",
+           "names of the object you would like to read in!")
+    }
+    return(NULL)
+  }
+  if (!all(grepl("*", allPatterns, fixed = TRUE))) return(allPatterns)
+
+  # translate name patterns in standard regular expression syntax
+  patterns <- paste("^", gsub("*", ".*", allPatterns, fixed = TRUE), "$", sep = "")
+
+  items <- names(gamstransfer::readGDX(gdx, records = FALSE))
+
+  selectedItems <- NULL
+  for (p in patterns) {
+    selectedItems <- c(selectedItems, grep(p, items, value = TRUE))
+    if (format == "first_found" && length(selectedItems) > 0) break
+  }
+
+  if (length(selectedItems) == 0) {
+    if (react == "warning") warning("No element of ", paste(allPatterns, collapse = ", "),
+                                    " found in GDX! NULL returned")
+    if (react == "error") stop("No element of ", paste(allPatterns, collapse = ", "),
+                               " found in GDX!")
+    return("###NOMATCH###")
+  }
+  return(selectedItems)
 }

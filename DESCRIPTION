@@ -1,7 +1,7 @@
 Type: Package
 Package: gdx2
 Title: Interface package for GDX files in R
-Version: 0.1.7
+Version: 0.2.0
 Date: 2024-07-26
 Authors@R: c(
     person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", 

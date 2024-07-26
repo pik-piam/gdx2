@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'gdx2: Interface package for GDX files in R'
-version: 0.1.7
+version: 0.2.0
 date-released: '2024-07-26'
 abstract: A wrapper package for the gamstransfer package extending its functionality
   and allowing to read GDX files directly in R. It is emulating the basic features
