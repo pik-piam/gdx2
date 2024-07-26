@@ -35,6 +35,8 @@
 #' in does not exist. Available options are "warning" (NULL is returned and a
 #' warning is send that the object is missing), "silent" (NULL is returned, but
 #' no warning is given) and "error" (The function throws out an error)
+#' @param followAlias bolean deciding whether the alias or its linked set should be
+#' returned.
 #' @param spatial argument to determine the spatial columns in the dataframe to
 #' be converted to a magclass object. Defaults to NULL.
 #' See \code{\link[magclass]{as.magpie}} for more information.
@@ -66,7 +68,7 @@
 #' @export
 
 readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: cyclocomp_linter
-                    spatial = NULL, temporal = NULL, magpieCells = TRUE,
+                    followAlias = FALSE, spatial = NULL, temporal = NULL, magpieCells = TRUE,
                     select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
 
   formats <- c(f = "first_found", first_found = "first_found",
@@ -118,31 +120,45 @@ readGDX <- function(gdx, ..., format = "simplest", react = "warning", # nolint: 
     m <- x[[i]][!(names(x[[i]]) %in% c("records", "description"))]
     if (format != "raw") {
       if (m$class == "Set") {
-        x[[i]] <- x[[i]]$records
-        if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
-      } else if (m$class != "Alias") {
+        if (is.null(x[[i]]$records)) {
+          x[[i]] <- character(0)
+        } else {
+          x[[i]] <- x[[i]]$records
+          if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+        }
+      } else if (m$class == "Alias") {
+        if (followAlias) x[[i]] <- readGDX(gdx, x[[i]]$aliasWith, followAlias = TRUE)
+      } else {
         if (m$class == "Variable") {
           # convert data.table into long format
           .long <- function(x) {
             n <- c("level", "marginal", "lower", "upper", "scale")
             cn <- colnames(x)[!(colnames(x) %in% n)]
-            out <- rbind(x[cn], x[cn], x[cn], x[cn], x[cn])
-            out$"_field" <- rep(n, each = nrow(x))
+            if (length(cn) == 0) {
+              out <- data.frame("_field" = n, check.names = FALSE)
+            } else {
+              out <- rbind(x[cn], x[cn], x[cn], x[cn], x[cn])
+              out$"_field" <- rep(n, each = nrow(x))
+            }
             out$value <- unlist(x[n])
             return(out)
           }
           x[[i]]$records <- .long(x[[i]]$records)
         }
         if (restoreZeros && length(x[[i]]$domain) > 0) {
-          dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE)
-          if ("_field" %in% colnames(x[[i]]$records)) {
-            dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
+          if ("*" %in% x[[i]]$domain) {
+            warning("Cannot restore zeros for ", names(x)[i], " as set dependency is not defined!")
+          } else {
+            dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE, followAlias = TRUE)
+            if ("_field" %in% colnames(x[[i]]$records)) {
+              dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
+            }
+            out <- array(0, vapply(dimnames, length, 1), dimnames)
+            if (!is.null(x[[i]]$records)) {
+              out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
+            }
+            x[[i]]$records <- out
           }
-          out <- array(0, vapply(dimnames, length, 1), dimnames)
-          if (!is.null(x[[i]]$records)) {
-            out[as.matrix(x[[i]]$records[names(dimnames(out))])] <- x[[i]]$records[, ncol(x[[i]]$records)]
-          }
-          x[[i]]$records <- out
         }
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
                                       temporal = temporal, tidy = TRUE)

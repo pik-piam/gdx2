@@ -9,6 +9,7 @@ readGDX(
   ...,
   format = "simplest",
   react = "warning",
+  followAlias = FALSE,
   spatial = NULL,
   temporal = NULL,
   magpieCells = TRUE,
@@ -52,6 +53,9 @@ as vector.}}}
 in does not exist. Available options are "warning" (NULL is returned and a
 warning is send that the object is missing), "silent" (NULL is returned, but
 no warning is given) and "error" (The function throws out an error)}
+
+\item{followAlias}{bolean deciding whether the alias or its linked set should be
+returned.}
 
 \item{spatial}{argument to determine the spatial columns in the dataframe to
 be converted to a magclass object. Defaults to NULL.
