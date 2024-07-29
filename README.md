@@ -1,6 +1,6 @@
 # Interface package for GDX files in R
 
-R package **gdx2**, version **0.3.0**
+R package **gdx2**, version **0.3.1**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/gdx2)](https://cran.r-project.org/package=gdx2)  [![R build status](https://github.com/pik-piam/gdx2/workflows/check/badge.svg)](https://github.com/pik-piam/gdx2/actions) [![codecov](https://codecov.io/gh/pik-piam/gdx2/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/gdx2) [![r-universe](https://pik-piam.r-universe.dev/badges/gdx2)](https://pik-piam.r-universe.dev/builds)
 
@@ -40,7 +40,7 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **gdx2** in publications use:
 
-Dietrich J (2024). _gdx2: Interface package for GDX files in R_. R package version 0.3.0, <URL: https://github.com/pik-piam/gdx2>.
+Dietrich J (2024). _gdx2: Interface package for GDX files in R_. R package version 0.3.1, <https://github.com/pik-piam/gdx2>.
 
 A BibTeX entry for LaTeX users is
 
@@ -49,7 +49,7 @@ A BibTeX entry for LaTeX users is
   title = {gdx2: Interface package for GDX files in R},
   author = {Jan Philipp Dietrich},
   year = {2024},
-  note = {R package version 0.3.0},
+  note = {R package version 0.3.1},
   url = {https://github.com/pik-piam/gdx2},
 }
 ```

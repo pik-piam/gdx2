@@ -78,7 +78,7 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
 
   selectedItems <- .expandPattern(c(...), gdx, format, type, react)
 
-  if (!is.null(selectedItems) && selectedItems == "###NOMATCH###") return(NULL)
+  if (!is.null(selectedItems) && all(selectedItems == "###NOMATCH###")) return(NULL)
 
   if (anyDuplicated(selectedItems)) {
     warning("Item(s) selected more than once, but will only be read once!")
