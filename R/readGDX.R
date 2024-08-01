@@ -113,6 +113,11 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
         if (is.null(x[[i]]$records)) {
           x[[i]] <- character(0)
         } else {
+          # special treatment of set "j" -> replace underscores with dots!
+          if (x[[i]]$name == "j") names(x[[i]]$records)[1] <- "j"
+          if (magpieCells && ("j" %in% names(x[[i]]$records))) {
+            x[[i]]$records$j <- sub("_", ".", x[[i]]$records$j)
+          }
           x[[i]] <- x[[i]]$records
           if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
         }
@@ -139,7 +144,8 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           if ("*" %in% x[[i]]$domain) {
             warning("Cannot restore zeros for ", names(x)[i], " as set dependency is not defined!")
           } else {
-            dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE, followAlias = TRUE)
+            dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
+                                followAlias = TRUE, magpieCells = FALSE)
             if ("_field" %in% colnames(x[[i]]$records)) {
               dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
             }
