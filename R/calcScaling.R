@@ -8,7 +8,7 @@
 #' the code is returned by the function
 #' @param magnitude The order of magnitude for which variables should be
 #' scaled. All variables with average absolute values which are either below
-#' 10e(-magnitude) or above 10e(magnitude) will be scaled.
+#' 10^(-magnitude) or above 10^(magnitude) will be scaled.
 #' @return A vector with the scaling GAMS code if file=NULL, otherwise nothing
 #' is returned.
 #' @author Jan Philipp Dietrich
@@ -32,7 +32,7 @@ calcScaling <- function(gdx, file = NULL, magnitude = 2) {
       sets <- paste("(", paste(attr(v[[x]], "gdxMetadata")$domain, collapse = ","), ")", sep = "")
     }
     if (oof != -Inf && (oof < -1 * magnitude || oof > 1 * magnitude)) {
-      out <- c(out, paste(x, ".scale", sets, " = 10e", oof, ";", sep = ""))
+      out <- c(out, paste(x, ".scale", sets, " = 1e", oof, ";", sep = ""))
     }
   }
   cat("\n\n")
