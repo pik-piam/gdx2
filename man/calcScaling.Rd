@@ -14,7 +14,7 @@ the code is returned by the function}
 
 \item{magnitude}{The order of magnitude for which variables should be
 scaled. All variables with average absolute values which are either below
-10e(-magnitude) or above 10e(magnitude) will be scaled.}
+10^(-magnitude) or above 10^(magnitude) will be scaled.}
 }
 \value{
 A vector with the scaling GAMS code if file=NULL, otherwise nothing
