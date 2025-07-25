@@ -18,9 +18,10 @@
 #' calcScaling("fulldata.gdx")
 #' }
 #' @export
-calcScaling <- function(gdx, file = NULL, magnitude = 2) {
-  v <- readGDX(gdx, type = "Variable", select = list("_field" = "level"))
+calcScaling <- function(gdx, file = NULL, magnitude = 2) {# nolint: cyclocomp_linter
   out <- NULL
+
+  v <- readGDX(gdx, type = "Variable", select = list("_field" = "level"))
   for (x in names(v)) {
     # calculate order of magnitude (oof)
     oof <- round(log10(mean(abs(v[[x]]))))
@@ -36,6 +37,45 @@ calcScaling <- function(gdx, file = NULL, magnitude = 2) {
     }
   }
   cat("\n\n")
+  out <- sort(out)
+
+  out2 <- NULL
+  v <- readGDX(gdx, type = "Equation", select = list("_field" = "level"))
+  for (x in names(v)) {
+    # calculate order of magnitude (oof)
+    if (length(v[[x]]) == 0) next
+    oof <- round(log10(mean(abs(v[[x]]))))
+    if (is.nan(oof)) oof <- 0
+    cat("\n oof =", oof, "  ", x)
+    if (length(attr(v[[x]], "gdxMetadata")$domain) == 0) {
+      sets <- ""
+    } else {
+      sets <- paste("(", paste(attr(v[[x]], "gdxMetadata")$domain, collapse = ","), ")", sep = "")
+    }
+    if (oof != -Inf && (oof < -1 * magnitude || oof > 1 * magnitude)) {
+      out2 <- c(out2, paste(x, ".scale", sets, " = 1e", oof, ";", sep = ""))
+    }
+  }
+  cat("\n\n")
+
+  out3 <- NULL
+  v <- readGDX(gdx, type = "Equation", select = list("_field" = "marginal"))
+  for (x in names(v)) {
+    # calculate order of magnitude (oof)
+    oof <- round(log10(mean(abs(v[[x]]))))
+    if (is.nan(oof)) oof <- 0
+    cat("\n oof =", oof, "  ", x)
+    if (length(attr(v[[x]], "gdxMetadata")$domain) == 0) {
+      sets <- ""
+    } else {
+      sets <- paste("(", paste(attr(v[[x]], "gdxMetadata")$domain, collapse = ","), ")", sep = "")
+    }
+    if (oof != -Inf && (oof < -1 * magnitude || oof > 1 * magnitude)) {
+      out3 <- c(out3, paste(x, ".scale", sets, " = 1e", -oof, ";", sep = ""))
+    }
+  }
+  cat("\n\n")
+  out <- c(out, sort(c(out2, out3)))
 
   if (!is.null(file)) {
     writeLines(out, file)
