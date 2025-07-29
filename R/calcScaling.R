@@ -44,7 +44,7 @@ calcScaling <- function(gdx, file = NULL, magnitude = 2) {# nolint: cyclocomp_li
   for (x in names(v)) {
     # calculate order of magnitude (oof)
     if (length(v[[x]]) == 0) next
-    oof <- round(log10(mean(abs(v[[x]]))))
+    oof <- round(mean(log10(abs(v[[x]][v[[x]] != 0]))))
     if (is.nan(oof)) oof <- 0
     cat("\n oof =", oof, "  ", x)
     if (length(attr(v[[x]], "gdxMetadata")$domain) == 0) {
