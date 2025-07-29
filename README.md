@@ -48,7 +48,7 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {gdx2: Interface package for GDX files in R},
   author = {Jan Philipp Dietrich},
-  date = {2025-07-25},
+  date = {2025-07-29},
   year = {2025},
   url = {https://github.com/pik-piam/gdx2},
   note = {Version: 0.4.0},

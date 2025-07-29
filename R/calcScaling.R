@@ -62,7 +62,7 @@ calcScaling <- function(gdx, file = NULL, magnitude = 2) {# nolint: cyclocomp_li
   v <- readGDX(gdx, type = "Equation", select = list("_field" = "marginal"))
   for (x in names(v)) {
     # calculate order of magnitude (oof)
-    oof <- round(log10(mean(abs(v[[x]]))))
+    oof <- -round(log10(mean(1 / abs(v[[x]] + 1e-6))))
     if (is.nan(oof)) oof <- 0
     cat("\n oof =", oof, "  ", x)
     if (length(attr(v[[x]], "gdxMetadata")$domain) == 0) {
