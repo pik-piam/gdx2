@@ -124,7 +124,12 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
       } else if (m$class == "Alias") {
         if (followAlias) x[[i]] <- readGDX(gdx, x[[i]]$aliasWith, followAlias = TRUE)
       } else {
-        if (m$class == "Variable") {
+        if (m$class == "Variable" || m$class == "Equation") {
+          if (x[[i]]$numberRecords == 0) {
+            # Equations or variables might be listed in the gdx without entries.
+            x[[i]] <- 0
+            next
+          }
           # convert data.table into long format
           .long <- function(x) {
             n <- c("level", "marginal", "lower", "upper", "scale")
