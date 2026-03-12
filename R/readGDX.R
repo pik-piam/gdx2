@@ -126,7 +126,7 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
       } else {
         if (m$class == "Variable" || m$class == "Equation") {
           if (x[[i]]$numberRecords == 0) {
-            print(i)
+            # Equations or variables might be listed in the gdx without entries.
             x[[i]] <- 0
             next
           }
