@@ -1,0 +1,4 @@
+# License
+
+    YEAR: 2016-2018
+    COPYRIGHT HOLDER: Potsdam Institute for Climate Impact Research (PIK)
