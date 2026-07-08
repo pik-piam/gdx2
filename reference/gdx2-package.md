@@ -12,10 +12,18 @@ Useful links:
 
 - <https://github.com/pik-piam/gdx2>
 
+- [doi:10.5281/zenodo.21256770](https://doi.org/10.5281/zenodo.21256770)
+
 - Report bugs at <https://github.com/pik-piam/gdx2/issues>
 
 ## Author
 
 **Maintainer**: Jan Philipp Dietrich <dietrich@pik-potsdam.de>
-([ORCID](https://orcid.org/0000-0002-4309-6431)) (Potsdam Institute for
-Climate Impact Research)
+([ORCID](https://orcid.org/0000-0002-4309-6431)) (affiliation: Potsdam
+Institute for Climate Impact Research)
+
+Authors:
+
+- Jan Philipp Dietrich <dietrich@pik-potsdam.de>
+  ([ORCID](https://orcid.org/0000-0002-4309-6431)) (affiliation: Potsdam
+  Institute for Climate Impact Research)
