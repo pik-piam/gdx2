@@ -12,12 +12,18 @@ A wrapper package for the gamstransfer package extending its functionality and a
 Useful links:
 \itemize{
   \item \url{https://github.com/pik-piam/gdx2}
+  \item \doi{10.5281/zenodo.21256770}
   \item Report bugs at \url{https://github.com/pik-piam/gdx2/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Jan Philipp Dietrich \email{dietrich@pik-potsdam.de} (\href{https://orcid.org/0000-0002-4309-6431}{ORCID}) (Potsdam Institute for Climate Impact Research)
+\strong{Maintainer}: Jan Philipp Dietrich \email{dietrich@pik-potsdam.de} (\href{https://orcid.org/0000-0002-4309-6431}{ORCID}) (affiliation: Potsdam Institute for Climate Impact Research)
+
+Authors:
+\itemize{
+  \item Jan Philipp Dietrich \email{dietrich@pik-potsdam.de} (\href{https://orcid.org/0000-0002-4309-6431}{ORCID}) (affiliation: Potsdam Institute for Climate Impact Research)
+}
 
 }
 \keyword{internal}

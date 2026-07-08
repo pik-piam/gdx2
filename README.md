@@ -1,8 +1,8 @@
 # Interface package for GDX files in R
 
-R package **gdx2**, version **0.5.0**
+R package **gdx2**, version **0.6.0**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/gdx2)](https://cran.r-project.org/package=gdx2) [![R build status](https://github.com/pik-piam/gdx2/workflows/check/badge.svg)](https://github.com/pik-piam/gdx2/actions) [![codecov](https://codecov.io/gh/pik-piam/gdx2/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/gdx2) [![r-universe](https://pik-piam.r-universe.dev/badges/gdx2)](https://pik-piam.r-universe.dev/builds)
+  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21256770.svg)](https://doi.org/10.5281/zenodo.21256770) [![R build status](https://github.com/pik-piam/gdx2/workflows/check/badge.svg)](https://github.com/pik-piam/gdx2/actions) [![codecov](https://codecov.io/gh/pik-piam/gdx2/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/gdx2) [![r-universe](https://pik-piam.r-universe.dev/badges/gdx2)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -22,13 +22,13 @@ The additional repository can be made available permanently by adding the line a
 
 After that the most recent version of the package can be installed using `install.packages`:
 
-```r 
+```r
 install.packages("gdx2")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
 
-```r 
+```r
 update.packages()
 ```
 
@@ -40,7 +40,7 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **gdx2** in publications use:
 
-Dietrich J (2026). "gdx2: Interface package for GDX files in R." Version: 0.5.0, <https://github.com/pik-piam/gdx2>.
+Dietrich J (2026). "gdx2: Interface package for GDX files in R." doi:10.5281/zenodo.21256770 <https://doi.org/10.5281/zenodo.21256770>, Version: 0.6.0, <https://github.com/pik-piam/gdx2>.
 
 A BibTeX entry for LaTeX users is
 
@@ -48,9 +48,10 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {gdx2: Interface package for GDX files in R},
   author = {Jan Philipp Dietrich},
-  date = {2026-03-31},
+  doi = {10.5281/zenodo.21256770},
+  date = {2026-07-08},
   year = {2026},
   url = {https://github.com/pik-piam/gdx2},
-  note = {Version: 0.5.0},
+  note = {Version: 0.6.0},
 }
 ```

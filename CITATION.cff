@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'gdx2: Interface package for GDX files in R'
-version: 0.5.0
-date-released: '2026-03-31'
+version: 0.6.0
+date-released: '2026-07-08'
 abstract: A wrapper package for the gamstransfer package extending its functionality
   and allowing to read GDX files directly in R. It is emulating the basic features
   of the readGDX function in the gdx package but now based on gamstransfer instead
@@ -18,4 +18,5 @@ license: BSD-2-Clause
 keywords:
 - tool
 repository-code: https://github.com/pik-piam/gdx2
+doi: 10.5281/zenodo.21256770
 
