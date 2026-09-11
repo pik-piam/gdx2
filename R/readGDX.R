@@ -150,7 +150,7 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
             warning("Cannot restore zeros for ", names(x)[i], " as set dependency is not defined!")
           } else {
 
-            if (any(duplicated(x[[i]]$domain))){
+            if (any(duplicated(x[[i]]$domain))) {
               dimnames <- readGDX(gdx, unique(x[[i]]$domain), format = "simple", addAttributes = FALSE,
                                   followAlias = TRUE, magpieCells = FALSE)
               dimnames <- dimnames[x[[i]]$domain]
@@ -178,7 +178,8 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
         }
         if (!is.null(select)) {
-          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = TRUE)
+          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = FALSE)
+          x[[i]] <- magclass::collapseNames(x[[i]], collapsedim = names(select))
         }
       }
       if (addAttributes) {
