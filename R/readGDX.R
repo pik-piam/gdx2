@@ -149,8 +149,18 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           if ("*" %in% x[[i]]$domain) {
             warning("Cannot restore zeros for ", names(x)[i], " as set dependency is not defined!")
           } else {
-            dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
-                                followAlias = TRUE, magpieCells = FALSE)
+
+            if (any(duplicated(x[[i]]$domain))) {
+              dimnames <- readGDX(gdx, unique(x[[i]]$domain), format = "simple", addAttributes = FALSE,
+                                  followAlias = TRUE, magpieCells = FALSE)
+              dimnames <- dimnames[x[[i]]$domain]
+              # restore unique dimnames following the logic used by gamstransfer
+              names(dimnames) <- names(x[[i]]$records)[seq(1, length(dimnames))]
+            } else {
+              dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
+                                  followAlias = TRUE, magpieCells = FALSE)
+            }
+
             if ("_field" %in% colnames(x[[i]]$records)) {
               dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
             }
@@ -168,7 +178,8 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
         }
         if (!is.null(select)) {
-          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = TRUE)
+          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = FALSE)
+          x[[i]] <- magclass::collapseNames(x[[i]], collapsedim = names(select))
         }
       }
       if (addAttributes) {
