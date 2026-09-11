@@ -155,7 +155,7 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
                                   followAlias = TRUE, magpieCells = FALSE)
               dimnames <- dimnames[x[[i]]$domain]
               # restore unique dimnames following the logic used by gamstransfer
-              names(dimnames) <- names(x[[i]]$records)[seq(1,length(dimnames))]
+              names(dimnames) <- names(x[[i]]$records)[seq(1, length(dimnames))]
             } else {
               dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
                                   followAlias = TRUE, magpieCells = FALSE)
