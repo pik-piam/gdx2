@@ -12,11 +12,11 @@ Source:
 [`inst/CITATION`](https://github.com/pik-piam/gdx2/blob/main/inst/CITATION)
 
 Dietrich J (2026). *gdx2: Interface package for GDX files in R*. R
-package version 0.6.0.
+package version 0.6.1.
 
     @Manual{,
       title = {gdx2: Interface package for GDX files in R},
       author = {Jan Philipp Dietrich},
       year = {2026},
-      note = {R package version 0.6.0},
+      note = {R package version 0.6.1},
     }

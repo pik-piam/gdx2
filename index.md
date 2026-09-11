@@ -1,6 +1,6 @@
 # Interface package for GDX files in R
 
-R package **gdx2**, version **0.6.0**
+R package **gdx2**, version **0.6.1**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21256770.svg)](https://doi.org/10.5281/zenodo.21256770)
 [![R build
@@ -54,7 +54,7 @@ To cite package **gdx2** in publications use:
 
 Dietrich J (2026). “gdx2: Interface package for GDX files in R.”
 <doi:10.5281/zenodo.21256770> <https://doi.org/10.5281/zenodo.21256770>,
-Version: 0.6.0, <https://github.com/pik-piam/gdx2>.
+Version: 0.6.1, <https://github.com/pik-piam/gdx2>.
 
 A BibTeX entry for LaTeX users is
 
@@ -63,9 +63,9 @@ A BibTeX entry for LaTeX users is
  title = {gdx2: Interface package for GDX files in R},
  author = {Jan Philipp Dietrich},
  doi = {10.5281/zenodo.21256770},
- date = {2026-07-08},
+ date = {2026-09-10},
  year = {2026},
  url = {https://github.com/pik-piam/gdx2},
- note = {Version: 0.6.0},
+ note = {Version: 0.6.1},
 }
 ```
