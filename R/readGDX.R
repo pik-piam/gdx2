@@ -61,12 +61,6 @@
 #' restore_zeros=FALSE
 #' @param addAttributes Boolean which controls whether the description and
 #' gdxMetadata should be added as attributes or not
-#' @param uniqueStyle Determines how unique elements should be presented. "default"
-#' uses the format returned by gamstransfer, i.e. all elements get an underscore and
-#' number as a suffix ("foo_1", "bar_2", "foo_3"). "classic" is the style used by the
-#' predecessor library "gdx" ("foo", "bar", "bar1")
-#' @param stringsAsFactors Data columns with strings are returned as factors by
-#' gamstransfer by default. Can be turned off by setting this parameter to FALSE.
 #' @return The gdx objects read in the format set with the argument
 #' \code{format}.
 #' @author Jan Philipp Dietrich
@@ -78,8 +72,7 @@
 
 readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning", # nolint: cyclocomp_linter
                     followAlias = FALSE, spatial = NULL, temporal = NULL, magpieCells = TRUE,
-                    select = NULL, restoreZeros = TRUE, addAttributes = TRUE,
-                    uniqueStyle = "default", stringsAsFactors = TRUE) {
+                    select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
 
   format <- .formatFormat(format)
 
@@ -126,11 +119,6 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
             x[[i]]$records$j <- sub("_", ".", x[[i]]$records$j)
           }
           x[[i]] <- x[[i]]$records
-
-          if (uniqueStyle == "classic") colnames(x[[i]]) <- .adaptEnumeration(colnames(x[[i]]))
-
-          if (!stringsAsFactors) x[[i]] <- data.frame(lapply(x[[i]], as.character), stringsAsFactors = FALSE)
-
           if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
         }
       } else if (m$class == "Alias") {
@@ -161,17 +149,8 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           if ("*" %in% x[[i]]$domain) {
             warning("Cannot restore zeros for ", names(x)[i], " as set dependency is not defined!")
           } else {
-
-            if (any(duplicated(x[[i]]$domain))){
-              dimnames <- readGDX(gdx, unique(x[[i]]$domain), format = "simple", addAttributes = FALSE,
-                                  followAlias = TRUE, magpieCells = FALSE)
-              dimnames <- dimnames[x[[i]]$domain]
-              names(dimnames) <- names(x[[i]]$records)[seq(1,length(dimnames))]
-            } else {
-              dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
-                                  followAlias = TRUE, magpieCells = FALSE)
-            }
-
+            dimnames <- readGDX(gdx, x[[i]]$domain, format = "simple", addAttributes = FALSE,
+                                followAlias = TRUE, magpieCells = FALSE)
             if ("_field" %in% colnames(x[[i]]$records)) {
               dimnames$"_field" <- c("level", "marginal", "lower", "upper", "scale")
             }
@@ -182,20 +161,14 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
             x[[i]]$records <- out
           }
         }
-
         x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
                                       temporal = temporal, tidy = TRUE)
-
-        if (uniqueStyle == "classic") {
-          getSets(x[[i]]) <- .adaptEnumeration(getSets(x[[i]]))
-        }
         # special treatment of set "j" -> replace underscores with dots!
         if (magpieCells && ("j" %in% magclass::getSets(x[[i]]))) {
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
         }
         if (!is.null(select)) {
-          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = FALSE)
-          x[[i]] <- collapseNames(x[[i]], collapsedim = names(select))
+          x[[i]] <- magclass::mselect(x[[i]], select, collapseNames = TRUE)
         }
       }
       if (addAttributes) {
@@ -259,11 +232,4 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
     return("###NOMATCH###")
   }
   return(selectedItems)
-}
-
-# change naming of duplicate entries in a text vector
-# example: c("all_enty_1", "all_enty_2", "all_te_3", "all_enty_4", element_text") to
-# c("all_enty", "all_enty1", "all_te", "all_enty2", element_text")
-.adaptEnumeration <- function(v) {
-  return(make.unique(gsub("_[1-9]$", "", v), sep = ""))
 }
