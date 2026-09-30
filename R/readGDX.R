@@ -195,8 +195,14 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
           }
         }
 
-        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
-                                      temporal = temporal, tidy = TRUE)
+        if (is.null(x[[i]]$records)) {
+          x[[i]] <- new.magpie()
+        } else {
+          x[[i]] <- magclass::as.magpie(x[[i]]$records,
+            spatial = spatial,
+            temporal = temporal, tidy = TRUE
+          )
+        }
 
         if (uniqueStyle == "classic") {
           magclass::getSets(x[[i]]) <- .adaptEnumeration(magclass::getSets(x[[i]]))
