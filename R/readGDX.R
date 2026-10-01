@@ -196,7 +196,7 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
         }
 
         if (is.null(x[[i]]$records)) {
-          x[[i]] <- new.magpie()
+          x[[i]] <- magclass::new.magpie()
         } else {
           x[[i]] <- magclass::as.magpie(x[[i]]$records,
             spatial = spatial,
