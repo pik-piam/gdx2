@@ -11,7 +11,7 @@ gamstransfer as basis."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">gdx2</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,9 @@ readGDX which is now based on magclass structures and uses
 <span>  magpieCells <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  select <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  restoreZeros <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  addAttributes <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  addAttributes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  uniqueStyle <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -165,6 +167,19 @@ restore_zeros=FALSE</p></dd>
 <dt id="arg-addattributes">addAttributes<a class="anchor" aria-label="anchor" href="#arg-addattributes"></a></dt>
 <dd><p>Boolean which controls whether the description and
 gdxMetadata should be added as attributes or not</p></dd>
+
+
+<dt id="arg-uniquestyle">uniqueStyle<a class="anchor" aria-label="anchor" href="#arg-uniquestyle"></a></dt>
+<dd><p>Determines how unique elements should be presented. "default"
+uses the format returned by gamstransfer, i.e. all elements get an underscore and
+number as a suffix ("foo_1", "bar_2", "bar_3"). "classic" is the style used by the
+predecessor library "gdx" ("foo", "bar", "bar1").</p></dd>
+
+
+<dt id="arg-stringsasfactors">stringsAsFactors<a class="anchor" aria-label="anchor" href="#arg-stringsasfactors"></a></dt>
+<dd><p>Only applies to GAMS sets, which are returned as data frames.
+Data columns with strings are returned as factors by gamstransfer by default. Can be
+turned off by setting this parameter to FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">
