@@ -61,6 +61,14 @@
 #' restore_zeros=FALSE
 #' @param addAttributes Boolean which controls whether the description and
 #' gdxMetadata should be added as attributes or not
+#' @param uniqueStyle Determines how unique elements should be presented. "default"
+#' uses the format returned by gamstransfer, i.e. all elements get an underscore and
+#' number as a suffix ("foo_1", "bar_2", "bar_3"). "classic" is the style used by the
+#' predecessor library "gdx" ("foo", "bar", "bar1").
+#' @param stringsAsFactors Only applies to GAMS sets, which are returned as data frames.
+#' Data columns with strings are returned as factors by gamstransfer by default. Can be
+#' turned off by setting this parameter to FALSE.
+#'
 #' @return The gdx objects read in the format set with the argument
 #' \code{format}.
 #' @author Jan Philipp Dietrich
@@ -72,7 +80,8 @@
 
 readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning", # nolint: cyclocomp_linter
                     followAlias = FALSE, spatial = NULL, temporal = NULL, magpieCells = TRUE,
-                    select = NULL, restoreZeros = TRUE, addAttributes = TRUE) {
+                    select = NULL, restoreZeros = TRUE, addAttributes = TRUE,
+                    uniqueStyle = "default", stringsAsFactors = TRUE) {
 
   format <- .formatFormat(format)
 
@@ -119,7 +128,21 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
             x[[i]]$records$j <- sub("_", ".", x[[i]]$records$j)
           }
           x[[i]] <- x[[i]]$records
-          if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+
+          if (uniqueStyle == "classic") colnames(x[[i]]) <- .adaptEnumeration(colnames(x[[i]]))
+
+          if (!stringsAsFactors) {
+            x[[i]] <- data.frame(lapply(x[[i]], as.character), stringsAsFactors = FALSE)
+            # drop columns without values
+            for (j in colnames(x[[i]])) {
+              if (all(x[[i]][[j]] == "" | is.na(x[[i]][[j]]))) {
+                x[[i]][[j]] <- NULL
+              }
+            }
+            if (dim(x[[i]])[2] == 1) x[[i]] <- as.vector(x[[i]][[1]])
+          } else {
+            if (dim(x[[i]])[2] == 2) x[[i]] <- as.vector(x[[i]][[1]])
+          }
         }
       } else if (m$class == "Alias") {
         if (followAlias) x[[i]] <- readGDX(gdx, x[[i]]$aliasWith, followAlias = TRUE)
@@ -171,8 +194,19 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
             x[[i]]$records <- out
           }
         }
-        x[[i]] <- magclass::as.magpie(x[[i]]$records, spatial = spatial,
-                                      temporal = temporal, tidy = TRUE)
+
+        if (is.null(x[[i]]$records)) {
+          x[[i]] <- magclass::new.magpie()
+        } else {
+          x[[i]] <- magclass::as.magpie(x[[i]]$records,
+            spatial = spatial,
+            temporal = temporal, tidy = TRUE
+          )
+        }
+
+        if (uniqueStyle == "classic") {
+          magclass::getSets(x[[i]]) <- .adaptEnumeration(magclass::getSets(x[[i]]))
+        }
         # special treatment of set "j" -> replace underscores with dots!
         if (magpieCells && ("j" %in% magclass::getSets(x[[i]]))) {
           magclass::getItems(x[[i]], 1, raw = TRUE) <- sub("_", ".", magclass::getItems(x[[i]], 1))
@@ -243,4 +277,11 @@ readGDX <- function(gdx, ..., format = "simplest", type = NULL, react = "warning
     return("###NOMATCH###")
   }
   return(selectedItems)
+}
+
+# change naming of duplicate entries in a text vector
+# example: c("all_enty_1", "all_enty_2", "all_te_3", "all_enty_4", element_text") to
+# c("all_enty", "all_enty1", "all_te", "all_enty2", element_text")
+.adaptEnumeration <- function(v) {
+  return(make.unique(gsub("_[1-9]$", "", v), sep = ""))
 }

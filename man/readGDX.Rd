@@ -16,7 +16,9 @@ readGDX(
   magpieCells = TRUE,
   select = NULL,
   restoreZeros = TRUE,
-  addAttributes = TRUE
+  addAttributes = TRUE,
+  uniqueStyle = "default",
+  stringsAsFactors = TRUE
 )
 }
 \arguments{
@@ -88,6 +90,15 @@ restore_zeros=FALSE}
 
 \item{addAttributes}{Boolean which controls whether the description and
 gdxMetadata should be added as attributes or not}
+
+\item{uniqueStyle}{Determines how unique elements should be presented. "default"
+uses the format returned by gamstransfer, i.e. all elements get an underscore and
+number as a suffix ("foo_1", "bar_2", "bar_3"). "classic" is the style used by the
+predecessor library "gdx" ("foo", "bar", "bar1").}
+
+\item{stringsAsFactors}{Only applies to GAMS sets, which are returned as data frames.
+Data columns with strings are returned as factors by gamstransfer by default. Can be
+turned off by setting this parameter to FALSE.}
 }
 \value{
 The gdx objects read in the format set with the argument
